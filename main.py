@@ -29,6 +29,40 @@ import keras.backend as K
 from keras.callbacks import ModelCheckpoint
 from sklearn.metrics import confusion_matrix, classification_report
 
-print(np.__version__)
-print(pd.__version__)
-print(sn.__version__)
+#Importamos la bbdd de ejemplo
+from keras.datasets import cifar100
+
+# x son las imagenes e y etiquetas
+#label_mode es el tipo de etiqueta asociada a la imagen
+(x_train_original, y_train_original), (x_test_original, y_test_original) = cifar100.load_data(label_mode='fine')
+#Convertimos los arrays de etiquetas en su versión one-hot-encoding
+y_train = np_utils.to_categorical(y_train_original,100)
+y_test = np_utils.to_categorical(y_test_original,100)
+
+#Representamos la imagen que esconden estas matrices, el 3 es numero de imagen de la matriz
+#imgplot = plt.imshow(x_train_original[3])
+#plt.show()
+
+#Obtenemos que el array comprenderá valores de entre 0 y 1
+x_train = x_train_original/255
+x_test = x_test_original/255
+
+#Definimos los canales
+K.set_image_data_format('channels_last')
+#Definimos la fase del experimento: Fase 1 = Entrenamiento
+K.set_learning_phase(1)
+
+#Entrenemos una red neuronal sencilla
+def create_simple_nn():
+    model = Sequential() #Modelo usado para redes neuronales sencillas
+    # Flatten convierte los elementos de la matriz de imagenes de entrada en un array plano
+    model.add(Flatten(input_shape=(32,32,3),name="Input_layer"))  #Tamaño de la imagen 32x32 3 canales(RGB)
+    # Dense, añadimos una capa oculta (hidden layer) de la red neuronal
+    model.add(Dense(1000, activation='relu',name="Hidden_layer_1")) #Nº de nodos 1000, función de activación ReLu
+    model.add(Dense(500, activation='relu', name="Hidden_layer_2"))
+    model.add(Dense(100, activation='sofmax', name="Output_layer"))
+
+    return model
+
+
+
