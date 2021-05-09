@@ -60,9 +60,17 @@ def create_simple_nn():
     # Dense, añadimos una capa oculta (hidden layer) de la red neuronal
     model.add(Dense(1000, activation='relu',name="Hidden_layer_1")) #Nº de nodos 1000, función de activación ReLu
     model.add(Dense(500, activation='relu', name="Hidden_layer_2"))
-    model.add(Dense(100, activation='sofmax', name="Output_layer"))
+    model.add(Dense(100, activation='softmax', name="Output_layer"))
 
     return model
 
+snn_model = create_simple_nn()
+#Indicamos las funciones  de optimizacion, perdida y para metricas
+snn_model.compile(loss= 'categorical_crossentropy', optimizer='sgd',metrics=['acc', 'mse'])
+snn_model.summary()
+
+#Entrenamos el modelo
+#Usaremos bloques de 32 (reduciendo la necesidad de memoria) y daremos 10 vueltas completas
+snn = snn_model.fit(x=x_train, y=y_train, batch_size=32, epochs=10, verbose=1, validation_data=(x_test, y_test),shuffle=True)
 
 
